@@ -34,7 +34,10 @@ module.exports.routes = {
 
     'GET /signup': {
         view: 'signup'
-    }
+    },
+
+    // Rutas CRUD Rest personalizadas
+    'POST /signup': 'UserController.signup',
 
     /*'/': {
       view: 'homepage'
