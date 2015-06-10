@@ -49,11 +49,70 @@ module.exports = {
                                 return res.negotiate(err);
                             }
 
+                            req.session.me = newUser.id;
+
                             return res.json(newUser);
                         });
                     }
                 });
             }
         });
+    },
+
+    /**
+     * Comprueba el email y el password, y si coinciden con un usuario en la base de datos,
+     * lo loguea en la aplicacion
+     */
+    login: function(req, res) {
+
+        // intenta buscar un usuario con un email indicado
+        User.findOne({
+            email: req.param('email')
+        }, function foundUser(err, user){
+            if(err){ res.negotiate(err) };
+            if(!user){ res.notFound() };
+
+            // Compara el password ingresado por el usuario
+            // con el password encriptado en la base de datos
+            Passwords.checkPassword({
+                passwordAttempt: req.param('password'),
+                encryptedPassword: user.encryptedPassword
+            }).exec({
+                error: function (err){
+                    return res.negotiate(err);
+                },
+                // Si el password ingresado en el formulario no coincide con el
+                // el password encriptado en la base de datos
+                incorrect: function (){
+                    return res.notFound();
+                },
+                success: function(){
+                    // Guardo el id del usuario en la secion
+                    req.session.me = user.id;
+
+                    return res.ok();
+                }
+            });
+        });
+    },
+
+    /**
+     * Cierra la secion de la aplicacion
+     */
+    logout: function(req, res){
+
+        // Se busca el registro en la base de datos q coincida con el
+        //  id de usuario de la secion
+        User.findOne(req.session.me, function foundUser(err, user){
+            if(err){ res.negotiate(err) };
+            if(!user){
+                sails.log.verbose('La secion pertenece a un usuario que ya no existe, por favor trate de refrescar la pagina');
+                res.backToHomePage();
+            }
+
+            req.session.me = null;
+
+            res.backToHomePage();
+        })
     }
 };

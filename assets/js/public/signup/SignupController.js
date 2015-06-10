@@ -16,7 +16,7 @@ angular.module('SignupModule').controller('SignupController', ['$scope', '$http'
         })
         .then(function onSucces(data){
             console.log('data de prueba', data);
-            window.location = '/user';
+            window.location = '/';
         })
         .catch(function onError(response){
             // Handle known error type(s)

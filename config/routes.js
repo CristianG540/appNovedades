@@ -32,12 +32,21 @@ module.exports.routes = {
      *                                                                          *
      ***************************************************************************/
 
+    ////////////////////////////////////////////////////////////
+    // Server-rendered HTML webpages
+    ////////////////////////////////////////////////////////////
+
     'GET /signup': {
         view: 'signup'
     },
+    'GET /': 'PageController.showHomePage',
 
-    // Rutas CRUD Rest personalizadas
+    ////////////////////////////////////////////////////////////
+    // JSON API
+    ////////////////////////////////////////////////////////////
     'POST /signup': 'UserController.signup',
+    'PUT /login': 'UserController.login',
+    'GET /logout': 'UserController.logout'
 
     /*'/': {
       view: 'homepage'
